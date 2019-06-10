@@ -1,4 +1,4 @@
-package pl.edu.wat.wcy.reader;
+package pl.edu.wat.wcy.input;
 
 import pl.edu.wat.wcy.graph.Graph;
 

@@ -25,7 +25,7 @@ public class GraphGenerator {
         Graph graph = new Graph(vertices, edges);
         for (int i = 0; i < vertices; i++) {
             for (int j = i + 1; j < vertices; j++) {
-                int weight = ThreadLocalRandom.current().nextInt(1, 11);
+                int weight = ThreadLocalRandom.current().nextInt(1, 101);
                 graph.addEdge(i, j, weight);
                 graph.addEdge(j, i, weight);
             }

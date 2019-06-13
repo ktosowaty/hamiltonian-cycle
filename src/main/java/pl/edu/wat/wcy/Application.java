@@ -5,42 +5,69 @@ import pl.edu.wat.wcy.algorithm.NearestNeighborAlgorithm;
 import pl.edu.wat.wcy.graph.Graph;
 import pl.edu.wat.wcy.graph.HamiltonianCycle;
 import pl.edu.wat.wcy.input.GraphGenerator;
-import pl.edu.wat.wcy.input.GraphReader;
 
+import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class Application {
 
+    private static final int ATTEMPTS = 10;
+
     public static void main(String[] args) throws IOException {
-        Path path1 = Paths.get("src/main/resources/graph.txt").normalize().toAbsolutePath();
-        Graph graph1 = GraphReader.readGraph(path1);
-        graph1.print();
         BacktrackDfsAlgorithm backtrackDfsAlgorithm = new BacktrackDfsAlgorithm();
-        HamiltonianCycle cycle1 = backtrackDfsAlgorithm.findBestHamiltonianCycle(graph1);
-        cycle1.print();
-
-        Path path2 = Paths.get("src/main/resources/weighted-graph.txt").normalize().toAbsolutePath();
-        Graph weightedGraph1 = GraphReader.readWeightedGraph(path2);
-        weightedGraph1.print();
-        HamiltonianCycle cycle2 = backtrackDfsAlgorithm.findBestHamiltonianCycle(weightedGraph1);
-        cycle2.print();
         NearestNeighborAlgorithm nearestNeighborAlgorithm = new NearestNeighborAlgorithm();
-        HamiltonianCycle cycle3 = nearestNeighborAlgorithm.findBestHamiltonianCycle(weightedGraph1);
-        cycle3.print();
 
-        Graph graph2 = GraphGenerator.generateGraph(4);
-        graph2.print();
-        HamiltonianCycle cycle4 = backtrackDfsAlgorithm.findBestHamiltonianCycle(graph2);
-        cycle4.print();
+        Graph g = GraphGenerator.generateWeightedGraph(4);
+        nearestNeighborAlgorithm.findBestHamiltonianCycle(g);
 
-        Graph weightedGraph2 = GraphGenerator.generateWeightedGraph(4);
-        weightedGraph2.print();
-        HamiltonianCycle cycle5 = backtrackDfsAlgorithm.findBestHamiltonianCycle(weightedGraph2);
-        cycle5.print();
-        HamiltonianCycle cycle6 = nearestNeighborAlgorithm.findBestHamiltonianCycle(weightedGraph2);
-        cycle6.print();
+        FileWriter csvWriter = new FileWriter("new.csv");
+        csvWriter.append("GraphSize");
+        csvWriter.append(",");
+        csvWriter.append("BruteTime");
+        csvWriter.append(",");
+        csvWriter.append("HeuristicTime");
+//        csvWriter.append(",");
+//        csvWriter.append("AvgDiff");
+//        csvWriter.append(",");
+//        csvWriter.append("AvgPercentDiff");
+        csvWriter.append("\n");
+
+        for (int i = 4; i <= 12; i++) {
+            System.out.println("GRAPH SIZE: " + i);
+            long bruteAvg = 0;
+            long heuristicAvg = 0;
+//            double avgDiff = 0;
+//            double avgPercentDiff = 0;
+            for (int j = 1; j <= ATTEMPTS; j++) {
+                Graph graph = GraphGenerator.generateWeightedGraph(i);
+                long bruteStart = System.nanoTime();
+                HamiltonianCycle cycle1 = backtrackDfsAlgorithm.findBestHamiltonianCycle(graph);
+                long bruteFinish = System.nanoTime();
+                long bruteTime = bruteFinish - bruteStart;
+                long heuristicStart = System.nanoTime();
+                HamiltonianCycle cycle2 = nearestNeighborAlgorithm.findBestHamiltonianCycle(graph);
+                long heuristicFinish = System.nanoTime();
+                long heuristicTime = heuristicFinish - heuristicStart;
+                bruteAvg += bruteTime;
+                heuristicAvg += heuristicTime;
+                cycle1.print();
+                cycle2.print();
+//                avgDiff += cycle2.getCost() - cycle1.getCost();
+//                avgPercentDiff = ((double) cycle2.getCost() / cycle1.getCost()) - 1.0;
+            }
+            bruteAvg /= ATTEMPTS;
+            heuristicAvg /= ATTEMPTS;
+//            avgPercentDiff /= ATTEMPTS;
+            csvWriter.append(Integer.toString(i)).append(",");
+            csvWriter.append(Long.toString(bruteAvg)).append(",");
+            csvWriter.append(Long.toString(heuristicAvg));
+//            csvWriter.append(Double.toString(avgDiff)).append(",");
+//            csvWriter.append(Double.toString(avgPercentDiff)).append(",");
+            csvWriter.append("\n");
+        }
+
+        csvWriter.flush();
+        csvWriter.close();
 
     }
 

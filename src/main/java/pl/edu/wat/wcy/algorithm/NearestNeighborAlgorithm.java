@@ -17,34 +17,43 @@ public class NearestNeighborAlgorithm {
     private List<Vertex> path = new ArrayList<>();
     private int visitedVertices = 0;
     private int totalCost = 0;
-    private Vertex nextVertex;
+    private Vertex currentVertex;
 
     public NearestNeighborAlgorithm() {}
 
     public HamiltonianCycle findBestHamiltonianCycle(Graph graph) {
-        visited = new boolean[graph.size()];
-        nextVertex = graph.getVertices().get(START_VERTEX_NUMBER);
+        setup(graph);
         while (visitedVertices < graph.size()) {
-            visitVertex(nextVertex);
+            visitCurrentVertex();
             visitedVertices++;
         }
         return new HamiltonianCycle(path, totalCost);
     }
 
-    private void visitVertex(Vertex vertex) {
-        path.add(vertex);
-        visited[vertex.getNumber()] = true;
+    private void setup(Graph graph) {
+        visitedVertices = 0;
+        totalCost = 0;
+        visited = new boolean[graph.size()];
+        path = new ArrayList<>(graph.size());
+        currentVertex = graph.getVertices().get(START_VERTEX_NUMBER);
+    }
+
+    private void visitCurrentVertex() {
+        path.add(currentVertex);
+        visited[currentVertex.getNumber()] = true;
         int bestWeight = INF;
-        for (Pair<Vertex, Integer> adj : vertex.getAdjacent()) {
+        Vertex nexVertex = null;
+        for (Pair<Vertex, Integer> adj : currentVertex.getAdjacent()) {
             Vertex adjVertex = adj.getFirst();
             int weight = adj.getSecond();
             if (!visited[adjVertex.getNumber()] && weight < bestWeight) {
-                nextVertex = adjVertex;
+                nexVertex = adjVertex;
                 bestWeight = weight;
             }
         }
         if (bestWeight != INF) {
             totalCost += bestWeight;
+            currentVertex = nexVertex;
         } else {
             Pair<Vertex, Integer> toStart = findStartVertex();
             if (toStart != null) {
@@ -54,7 +63,7 @@ public class NearestNeighborAlgorithm {
     }
 
     private Pair<Vertex, Integer> findStartVertex() {
-        for (Pair<Vertex, Integer> adj : nextVertex.getAdjacent()) {
+        for (Pair<Vertex, Integer> adj : currentVertex.getAdjacent()) {
             if (adj.getFirst().getNumber() == START_VERTEX_NUMBER) {
                 return adj;
             }

@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class Application {
 
-    private static final int ATTEMPTS = 10;
+    private static final int ATTEMPTS = 1;
 
     public static void main(String[] args) throws IOException {
         BacktrackDfsAlgorithm backtrackDfsAlgorithm = new BacktrackDfsAlgorithm();
@@ -24,15 +24,15 @@ public class Application {
         csvWriter.append("GraphSize");
         csvWriter.append(",");
         csvWriter.append("BruteTime");
-        csvWriter.append(",");
-        csvWriter.append("HeuristicTime");
+//        csvWriter.append(",");
+//        csvWriter.append("HeuristicTime");
 //        csvWriter.append(",");
 //        csvWriter.append("AvgDiff");
 //        csvWriter.append(",");
 //        csvWriter.append("AvgPercentDiff");
         csvWriter.append("\n");
 
-        for (int i = 4; i <= 12; i++) {
+        for (int i = 100; i <= 5000; i+=100) {
             System.out.println("GRAPH SIZE: " + i);
             long bruteAvg = 0;
             long heuristicAvg = 0;
@@ -40,18 +40,20 @@ public class Application {
 //            double avgPercentDiff = 0;
             for (int j = 1; j <= ATTEMPTS; j++) {
                 Graph graph = GraphGenerator.generateWeightedGraph(i);
-                long bruteStart = System.nanoTime();
-                HamiltonianCycle cycle1 = backtrackDfsAlgorithm.findBestHamiltonianCycle(graph);
-                long bruteFinish = System.nanoTime();
-                long bruteTime = bruteFinish - bruteStart;
+//                long bruteStart = System.nanoTime();
+//                HamiltonianCycle cycle1 = backtrackDfsAlgorithm.findBestHamiltonianCycle(graph);
+//                long bruteFinish = System.nanoTime();
+//                long bruteTime = bruteFinish - bruteStart;
+//                cycle1.print();
                 long heuristicStart = System.nanoTime();
                 HamiltonianCycle cycle2 = nearestNeighborAlgorithm.findBestHamiltonianCycle(graph);
                 long heuristicFinish = System.nanoTime();
                 long heuristicTime = heuristicFinish - heuristicStart;
-                bruteAvg += bruteTime;
+//                bruteAvg += bruteTime;
                 heuristicAvg += heuristicTime;
-                cycle1.print();
+
                 cycle2.print();
+//                graph.print();
 //                avgDiff += cycle2.getCost() - cycle1.getCost();
 //                avgPercentDiff = ((double) cycle2.getCost() / cycle1.getCost()) - 1.0;
             }
@@ -60,7 +62,7 @@ public class Application {
 //            avgPercentDiff /= ATTEMPTS;
             csvWriter.append(Integer.toString(i)).append(",");
             csvWriter.append(Long.toString(bruteAvg)).append(",");
-            csvWriter.append(Long.toString(heuristicAvg));
+//            csvWriter.append(Long.toString(heuristicAvg));
 //            csvWriter.append(Double.toString(avgDiff)).append(",");
 //            csvWriter.append(Double.toString(avgPercentDiff)).append(",");
             csvWriter.append("\n");
